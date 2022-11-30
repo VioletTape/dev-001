@@ -1,6 +1,4 @@
 ﻿using System.Drawing;
-using AutoMapper;
-using TryOut.Flyweight.Refactored;
 
 namespace TryOut.AbstractFactory.Refactored {
     public class Player {
