@@ -138,6 +138,4 @@ namespace TryOut.AbstractFactory.Refactored {
            return factoriesByTypes[type].Create(player);
        }
     }
-
-   
 }
