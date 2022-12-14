@@ -1,6 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 
-namespace TryOut.Adapter.Refactored {
+namespace TryOut._02Adapter.RefactoredWithSpec {
     public class NullSpecification<T> : Specification<T> {
         public override bool IsSatisfiedBy(T obj) {
             return true;

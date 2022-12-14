@@ -32,12 +32,13 @@
         public decimal Price { get; set; }
 
         public decimal GetFullPrice() {
+
             return Price;
         }
     }
 
-    public class Car : CompositeNode {}
-
+    public  class Car : CompositeNode { }
+    
     public class Body : CompositeNode {}
 
     public class Salon : CompositeNode {}
@@ -61,4 +62,7 @@
     public class Disc : Node {}
 
     public class Turbo : Node {}
+
+
+    
 }

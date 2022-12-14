@@ -20,7 +20,7 @@
             }
 
             if (StringNodeDecode) {
-                url = url.ToUpper();
+                url = url.ToLower();
             }
 
             if (url.StartsWith("c:")) {

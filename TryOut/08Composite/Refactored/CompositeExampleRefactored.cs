@@ -1,7 +1,4 @@
-﻿
-
-// в дерьмовом варианте еще и ошибка вычислений есть. Пусть попробуют найти.
-namespace TryOut.Composite.Refactored {
+﻿namespace TryOut.Composite.Refactored {
     public class CompositeExampleRefactored {
         public CompositeExampleRefactored() {
             var car = CreateCar();
@@ -11,7 +8,7 @@ namespace TryOut.Composite.Refactored {
         }
 
         private Car CreateCar() {
-            var car1 = new Car{Price = 1};
+            var car1 = new Car(){Price = 1};
             var body = new Body {Price = 1};
             body.Add(new ColorType {Price = 1});
             var salon = new Salon {Price = 1};

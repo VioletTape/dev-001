@@ -1,4 +1,4 @@
-﻿namespace TryOut.Adapter.Refactored {
+﻿namespace TryOut._02Adapter.RefactoredWithSpec {
     public class CustomerAdapter : Adapter<Customer> {
         public CustomerAdapter(Table<Customer> table) : base(table) {
             

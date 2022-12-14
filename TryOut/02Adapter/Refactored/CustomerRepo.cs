@@ -1,42 +1,36 @@
-﻿namespace TryOut.Adapter.Refactored {
+﻿namespace TryOut._02Adapter.Refactored {
     public class CustomerRepo {
         private readonly DbAccessor dbAccessor;
-        private readonly CustomerAdapter customerAdapter;
+        private readonly Table<CustomerDto> table;
+        CustomerAdapter customerAdapter;
 
         public CustomerRepo() {
             dbAccessor = new DbAccessor();
-            var table = dbAccessor.GetTable<Customer>();
-            customerAdapter = new CustomerAdapter(table);
+            table = dbAccessor.GetTable<CustomerDto>();
+            customerAdapter = new CustomerAdapter();
         }
 
-        public List<Customer> Get(Specification<Customer> specification) {
-            var result = dbAccessor.Select(customerAdapter.Convert(specification));
+        public List<Customer> GetCustomers(int top) {
+            var result = dbAccessor.Select(table.Take(top));
 
-            return result;
-        }
-    }
+           return result.Select(r => customerAdapter.Adapt(r)).ToList();
 
-    public class CustomerNameStartFrom : Specification<Customer> {
-        public string NameStartsFrom { get; private set; }
-
-        public CustomerNameStartFrom(string nameStartsFrom) {
-            NameStartsFrom = nameStartsFrom;
+            
         }
 
-        public override bool IsSatisfiedBy(Customer obj) {
-            return obj.Name.StartsWith(NameStartsFrom);
+        public List<Customer> GetCustomers(int top, string nameStartsFrom) {
+            var query = table.Take(top).Where(c => c.Name.StartsWith(nameStartsFrom));
+            var result = dbAccessor.Select(query);
+
+            return result.Select(r => customerAdapter.Adapt(r)).ToList();
         }
     }
 
-    public class TopSpecification<T> : Specification<T> {
-        public int Top { get; private set; }
-
-        public TopSpecification(int top) {
-            Top = top;
-        }
-
-        public override bool IsSatisfiedBy(T obj) {
-            return true;
+    public class CustomerAdapter {
+        public Customer Adapt(CustomerDto dto) {
+            return new Customer {
+                Id = dto.Id, Name = dto.Name
+            };
         }
     }
 }

@@ -1,13 +1,13 @@
 ﻿using System.Collections;
 using System.Linq.Expressions;
 
-namespace TryOut._02Adapter.Refactored {
+namespace TryOut._02Adapter.RefactoredWithSpec {
     public class DbAccessor {
-        public Table<T> GetTable<T>() where T : IDto {
+        public Table<T> GetTable<T>() {
             return new Table<T>();
         }
 
-        public List<T> Select<T>(IQueryable<T> query) where T : IDto {
+        public List<T> Select<T>(IQueryable<T> query) {
             // access to db, parsing and so on
             var result = query.ToList();
 
@@ -15,7 +15,7 @@ namespace TryOut._02Adapter.Refactored {
         }
     }
 
-    public class Table<T> : IQueryable<T> where T : IDto{
+    public class Table<T> : IQueryable<T> {
         public IEnumerator<T> GetEnumerator() {
             throw new NotImplementedException();
         }
@@ -27,17 +27,5 @@ namespace TryOut._02Adapter.Refactored {
         public Expression Expression { get; private set; }
         public Type ElementType { get; private set; }
         public IQueryProvider Provider { get; private set; }
-    }
-
-    public interface IDto{}
-
-    public class CustomerDto : IDto {
-        public Guid Id { get; set; }
-        public string Name { get; set; }
-    }
-
-    public class OrderDto : IDto {
-        public Guid Id { get; set; }
-        public CustomerDto Customer { get; set; }
     }
 }

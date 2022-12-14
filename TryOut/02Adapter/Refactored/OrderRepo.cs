@@ -1,44 +1,27 @@
-﻿namespace TryOut.Adapter.Refactored {
+﻿namespace TryOut._02Adapter.Refactored {
     public class OrderRepo {
         private readonly DbAccessor dbAccessor;
-        private readonly OrderAdapter orderAdapter;
+        private readonly Table<OrderDto> table;
+        OrderAdapter orderAdapter;
 
         public OrderRepo() {
             dbAccessor = new DbAccessor();
-            var table = dbAccessor.GetTable<Order>();
-            orderAdapter = new OrderAdapter(table);
+            table = dbAccessor.GetTable<OrderDto>();
+            orderAdapter = new OrderAdapter();
         }
 
-        public List<Order> Get(Specification<Order> specification) {
-            var result = dbAccessor.Select(orderAdapter.Convert(specification));
+        public List<Order> GetOrders(int top, Customer customer) {
+            var result = dbAccessor.Select(table.Take(top));
 
-            return result;
-        }
-    }
-
-    public class OrderAdapter : Adapter<Order> {
-        public OrderAdapter(Table<Order> table) : base(table) {}
-        public override IQueryable<Order> Convert(Specification<Order> specification) {
-            var query = CommonConditions(specification);
-
-            var forCustomer = specification.ExtractSupersetSpecification<OrderForCustomer>();
-            if (forCustomer != null) {
-                query = query.Where(i => i.Customer.Id == forCustomer.Customer.Id);
-            }
-
-            return query;
+            return result.Select(r => orderAdapter.Adapt(r, customer)).ToList();
         }
     }
 
-    public class OrderForCustomer : Specification<Order> {
-        public Customer Customer { get; private set; }
-
-        public OrderForCustomer(Customer customer) {
-            Customer = customer;
-        }
-
-        public override bool IsSatisfiedBy(Order obj) {
-            return obj.Customer == Customer;
+    public class OrderAdapter {
+        public Order Adapt(OrderDto dto, Customer c) {
+            return new Order() {
+                Id = dto.Id, Customer = c
+            };
         }
     }
 }

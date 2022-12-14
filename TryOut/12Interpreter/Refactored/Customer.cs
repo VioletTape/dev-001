@@ -58,7 +58,7 @@
                 Console.WriteLine(customer.Name + " " + customer.Country);
             }
 
-            var res2 = businessLogic.GetCustomerBy(new CustomerCountrySpec("United Kingdome")
+            var res2 = businessLogic.GetCustomerBy(new CustomerCountrySpec("United Kingdom")
                                                    & new CustomerNameStartsFromSpec("B"));
 
             foreach (var customer in res2) {

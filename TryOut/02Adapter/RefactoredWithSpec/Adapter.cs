@@ -1,4 +1,4 @@
-﻿namespace TryOut.Adapter.Refactored {
+﻿namespace TryOut._02Adapter.RefactoredWithSpec {
     public abstract class Adapter<T> {
         private readonly Table<T> table;
         protected Adapter(Table<T>  table) {
