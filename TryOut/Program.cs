@@ -4,7 +4,9 @@ using TryOut.AbstractFactory.Refactored;
 
 public class Program {
     public static void Main(string[] args) {
+        new TryOut.Commands.Refactored.Client();
 
+        Console.ReadLine();
     }
 }
 

@@ -1,28 +1,35 @@
-﻿namespace TryOut.Commands.Refactored {
+﻿
+namespace TryOut.Commands.Refactored {
     public class Client {
+        CommandHandler commandHandler;
+
         public Client() {
-            var devastator1 = new Devastator(new Channel {Frequncy = "23S"});
-            var devastator2 = new Devastator(new Channel {Frequncy = "55J"});
+            RegisterDependencies();
 
-            var remote = new UniversalRemoteController();
+            commandHandler.Process(new PlaceOrder(new Product()));
 
-            remote.RegisterCommand<Devastator>(CommandSet.CommandA, new AttachChainSawCommand());
-            remote.RegisterCommand<Devastator>(CommandSet.CommandB, new BoostCommand());
-            remote.RegisterCommand<Devastator>(CommandSet.CommandC, new FlipUpCommand());
+        }
 
-            remote.Add(devastator1, devastator1.Channel);
-            remote.Add(devastator2, devastator2.Channel);
+        private void RegisterDependencies() {
+            commandHandler = new CommandHandler();
 
-            remote.SetChannel(devastator1.Channel);
+            var notifications = new NotificationService(commandHandler);
+            commandHandler.RegisterHandler<SendNotification>(notifications.Handle);
 
-            remote.MoveBackward();
-            remote.CommandA();
+            var orderService = new OrderService(commandHandler);
+            commandHandler.RegisterHandler<PlaceOrder>(orderService.Handle);
+            commandHandler.RegisterHandler<EvaluateOrder>(orderService.Handle);
 
-            remote.SetChannel(devastator2.Channel);
-
-            remote.MoveBackward();
-            remote.MoveLeft();
-            remote.CommandB();
+            var bomService = new BomService(commandHandler); // BOM - Bill of materials
+            commandHandler.RegisterHandler<PlaceOrder>(bomService.Handle);
         }
     }
+
+
+
+
+
+
+
+    public class Product { }
 }
