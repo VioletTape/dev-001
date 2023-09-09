@@ -8,8 +8,8 @@ public class Client {
     }
 
     public class CalcDeliveryService {
-        public List<Deliverer> Calc(Address address) {
-            var deliverers = new List<Deliverer>();
+        public List<DeliverPrice> Calc(Address address) {
+            var deliverers = new List<DeliverPrice>();
             if (address.Country == "Poland") {
                 var deliverer1 = new LocalDeliverer("Argo").CheckPrice(address);
                 var deliverer2 = new LocalDeliverer("Ters").CheckPrice(address);
@@ -29,12 +29,12 @@ public class Client {
                 var deliverer4 = new LocalDeliverer("DHL").CheckPrice(address);
                 var deliverer5 = new LocalDeliverer("EmPost").CheckPrice(address);
                 if (deliverer1.Price > deliverer2.Price) {
-                    return new List<Deliverer> {deliverer2};
+                    return new List<DeliverPrice> {deliverer2};
                 }
                 if (deliverer1.Price < deliverer2.Price) {
-                    return new List<Deliverer> {deliverer1};
+                    return new List<DeliverPrice> {deliverer1};
                 }
-                return new List<Deliverer> {deliverer1, deliverer2};
+                return new List<DeliverPrice> {deliverer1, deliverer2};
             }
 
             else {
@@ -62,12 +62,12 @@ public class Client {
     public class LocalDeliverer {
         public LocalDeliverer(string argo) {}
 
-        public Deliverer CheckPrice(Address address) {
-            return new Deliverer();
+        public DeliverPrice CheckPrice(Address address) {
+            return new DeliverPrice();
         }
     }
 
-    public class Deliverer {
+    public class DeliverPrice {
         public Money Price { get; set; }
     }
 

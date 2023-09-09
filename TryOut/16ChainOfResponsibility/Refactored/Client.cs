@@ -1,92 +1,240 @@
-﻿namespace TryOut.ChainOfResponsibility.Refactored; 
+﻿using System.Collections;
+
+namespace TryOut.ChainOfResponsibility.Refactored;
 
 public class Client {
-        public Client() {
-            var address = new Address("Poland, Wroclaw, Kowalska, 42");
-            var calc = new CalcDeliveryService().Calc(address);
+    public Client() {
+        // example 
+        var courier = new DeliverCompany("acme");
+        courier.Add(new CountryRestriction());
+
+        // other
+
+
+        var package = new Package();
+        new CalcDeliveryService().Calc(package, new List<DeliverCompany>());
+
+        var companies = package.PossibleCouriers;
+    }
+
+
+    public class CalcDeliveryService {
+        public void Calc(Package package, List<DeliverCompany> couriers) {
+           
+            Dictionary<DeliverCompany, Constraint> rules = new Dictionary<DeliverCompany, Constraint>();
+            foreach (var courier in couriers) {
+                rules.Add(courier,  new EmptyConstraint());
+
+                foreach (var r in courier.Restrictions) {
+                    Constraint c = r switch {
+                                CountryRestriction cr => new CountryConstraint(cr.Value)
+                              , WeightRestriction wr => new WeightConstraint(wr.Value)
+                                // ...
+                              , _ => new EmptyConstraint()
+                            };
+                    rules[courier].SetNext(c);
+                }
+            }
+
+
+            couriers.ForEach(x => rules[x].Handle(package, x));
+
+
         }
     }
 
-    public class CalcDeliveryService {
-        public List<Deliverer> Calc(Address address) {
-            var deliverers = new List<Deliverer>();
-            if (address.Country == "Poland") {
-                var deliverer1 = new LocalDeliverer("Argo").CheckPrice(address);
-                var deliverer2 = new LocalDeliverer("Ters").CheckPrice(address);
-                if (deliverer1.Price > deliverer2.Price) {
-                    deliverers.Add(deliverer2);
-                }
-                if (deliverer1.Price < deliverer2.Price) {
-                    deliverers.Add(deliverer1);
-                }
-                deliverers.Add(deliverer1);
-                deliverers.Add(deliverer2);
-            }
-            if (EUDelivererCanHandle(address)) {
-                var deliverer1 = new LocalDeliverer("EuroExpress").CheckPrice(address);
-                var deliverer2 = new LocalDeliverer("PigeonMail").CheckPrice(address);
-                var deliverer3 = new LocalDeliverer("WheelsOfPost").CheckPrice(address);
-                var deliverer4 = new LocalDeliverer("DHL").CheckPrice(address);
-                var deliverer5 = new LocalDeliverer("EmPost").CheckPrice(address);
-                if (deliverer1.Price > deliverer2.Price) {
-                    return new List<Deliverer> {deliverer2};
-                }
-                if (deliverer1.Price < deliverer2.Price) {
-                    return new List<Deliverer> {deliverer1};
-                }
-                return new List<Deliverer> {deliverer1, deliverer2};
-            }
+    public interface IConstraint {
+        void Handle(Package package, DeliverCompany company);
+    }
 
-            else {
-                var deliverer1 = new LocalDeliverer("DHL").CheckPrice(address);
-                var deliverer2 = new LocalDeliverer("PonyExpress").CheckPrice(address);
-                var deliverer3 = new LocalDeliverer("FedEx").CheckPrice(address);
-                var deliverer4 = new LocalDeliverer("EmPost").CheckPrice(address);
+    public abstract class Constraint : IConstraint {
+        IConstraint? next;
 
-                if (deliverer1.Price > deliverer2.Price) {
-                    deliverers.Add(deliverer1);
-                }
-                if (deliverer1.Price < deliverer2.Price) {
-                    deliverers.Add(deliverer2);
-                }
-            }
+        protected Constraint() { }
 
-            return deliverers;
+        protected Constraint(IConstraint next) {
+            this.next = next;
         }
 
-        private bool EUDelivererCanHandle(Address argo) {
+        public void Handle(Package package, DeliverCompany company) {
+            if (Validate(package) == false)
+                return;
+
+            if (next == null)
+                package.PossibleCouriers.Add(company);
+            else
+                next.Handle(package, company);
+        }
+
+        public Constraint SetNext(Constraint next) {
+            this.next = next;
+
+            return next;
+        }
+
+        internal abstract bool Validate(Package package);
+    }
+
+    public class EmptyConstraint : Constraint {
+        internal override bool Validate(Package package) {
+            return true;
+        }
+    }
+
+    public class CountryConstraint : Constraint {
+        readonly List<string> availableCountries;
+
+        public CountryConstraint(List<string> availableCountries) {
+            this.availableCountries = availableCountries;
+        }
+
+        public CountryConstraint(List<string> availableCountries, IConstraint next) : base(next) {
+            this.availableCountries = availableCountries;
+        }
+
+        internal override bool Validate(Package package) {
+            return availableCountries.Contains(package.Destination.Country);
+        }
+    }
+
+    public class SizeConstraint : Constraint {
+        readonly Dimension maxSize;
+
+        public SizeConstraint(Dimension maxSize) {
+            this.maxSize = maxSize;
+        }
+
+        public SizeConstraint(Dimension maxSize, IConstraint next) : base(next) {
+            this.maxSize = maxSize;
+        }
+
+        internal override bool Validate(Package package) {
+            return package.Size < maxSize;
+        }
+    }
+
+    public class WeightConstraint : Constraint {
+        readonly double maxWeight;
+
+        public WeightConstraint(double maxWeight) {
+            this.maxWeight = maxWeight;
+        }
+
+        public WeightConstraint(double maxWeight, IConstraint next) : base(next) {
+            this.maxWeight = maxWeight;
+        }
+
+        internal override bool Validate(Package package) {
+            return package.Weight < maxWeight;
+        }
+    }
+
+    public class ValuableConstrain : Constraint {
+        readonly bool acceptValuable;
+
+        public ValuableConstrain(bool acceptValuable) {
+            this.acceptValuable = acceptValuable;
+        }
+
+        public ValuableConstrain(bool acceptValuable, IConstraint next) : base(next) {
+            this.acceptValuable = acceptValuable;
+        }
+
+        internal override bool Validate(Package package) {
+            if (package.IsValuable &&
+                !acceptValuable)
+                return false;
+
+            return true;
+        }
+    }
+
+    public class DangerousConstrain : Constraint {
+        readonly bool acceptDangerous;
+
+        public DangerousConstrain(bool acceptDangerous) {
+            this.acceptDangerous = acceptDangerous;
+        }
+
+        public DangerousConstrain(bool acceptDangerous, IConstraint next) : base(next) {
+            this.acceptDangerous = acceptDangerous;
+        }
+
+        internal override bool Validate(Package package) {
+            if (package.IsDangerous &&
+                !acceptDangerous)
+                return false;
+
+            return true;
+        }
+    }
+
+    public class Package {
+        public Address Destination { get; set; }
+        public Dimension Size { get; set; }
+
+        public double Weight { get; set; }
+
+        public bool IsValuable { get; set; }
+        public bool IsDangerous { get; set; }
+
+        public List<DeliverCompany> PossibleCouriers = new();
+    }
+
+    public class Dimension {
+        public static bool operator <(Dimension d1, Dimension d2) {
+            return true;
+        }
+
+        public static bool operator >(Dimension d1, Dimension d2) {
             return false;
         }
     }
 
-    public class LocalDeliverer {
-        public LocalDeliverer(string argo) {}
+    public class DeliverCompany {
+        public DeliverCompany(string argo) { }
+        public List<IRestriction> Restrictions { get; set; }
 
-        public Deliverer CheckPrice(Address address) {
-            return new Deliverer();
+        public void Add(IRestriction restriction) {
+            Restrictions.Add(restriction);
         }
     }
 
-    public class Deliverer {
-        public Money Price { get; set; }
-    }
-
-    public class Money : IComparable {
-        public int CompareTo(object obj) {
-            return 0;
-        }
-
-        public static bool operator >(Money m1, Money m2) {
-            return true;
-        }
-
-        public static bool operator <(Money m1, Money m2) {
-            return true;
-        }
-    }
 
     public class Address {
-        public Address(string address) {}
+        public Address(string address) { }
 
         public string Country { get; set; }
     }
+
+    public interface IRestriction {
+        
+    }
+
+    public interface Restriction<T> : IRestriction {
+        T Value { get; set; }
+    }
+
+    public class CountryRestriction : Restriction<List<string>> {
+        public List<string> Value { get; set; }
+    }
+
+
+    public class WeightRestriction : Restriction<double> {
+        public double Value { get; set; }
+    }
+    public class SizeRestriction : Restriction<Dimension> {
+        public Dimension Value { get; set; }
+    }
+    public class DangerousRestriction : Restriction<bool> {
+        public bool Value { get; set; }
+    }
+    public class ValueRestriction : Restriction<bool> {
+        public bool Value { get; set; }
+    }
+
+    public class Country { }
+}
+
+
+

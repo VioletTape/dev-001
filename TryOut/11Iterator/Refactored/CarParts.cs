@@ -36,6 +36,14 @@ namespace TryOut._11Iterator.Refactored {
             return carParts.Sum(i => i.GetFullPrice()) + Price;
         }
 
+        public List<ICarPart> GetCollection(ICarPart cp) {
+            var result = new List<ICarPart>(cp.GetParts());
+            foreach (var p in cp.GetParts()) {
+                result.AddRange(GetCollection(p));
+            }
+            return result;
+        }
+
     }
 
 

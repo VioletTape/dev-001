@@ -8,6 +8,12 @@ public class Client {
         var leafPartPrice = new LeafPartEnumerator(car).Sum(x => x.Price);
         
         var tires = new LeafPartEnumerator(car).OfType<Tire>();
+
+        // alternatives 
+
+        var sum = car.GetCollection(car).OfType<Node>().Sum(x => x.Price);
+        var ttires = car.GetCollection(car).OfType<Tire>();
+
     }
 
     private Car CreateCarByBuilder() {
