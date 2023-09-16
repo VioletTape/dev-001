@@ -178,6 +178,7 @@ public class Client {
         public bool IsValuable { get; set; }
         public bool IsDangerous { get; set; }
 
+        // учебная условность для примера
         public List<DeliverCompany> PossibleCouriers = new();
     }
 
@@ -218,7 +219,6 @@ public class Client {
     public class CountryRestriction : Restriction<List<string>> {
         public List<string> Value { get; set; }
     }
-
 
     public class WeightRestriction : Restriction<double> {
         public double Value { get; set; }

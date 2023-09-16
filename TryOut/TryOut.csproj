@@ -11,4 +11,9 @@
     <PackageReference Include="AutoMapper" Version="12.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="TypedObject\" />
+    <Folder Include="NullObject\" />
+  </ItemGroup>
+
 </Project>
