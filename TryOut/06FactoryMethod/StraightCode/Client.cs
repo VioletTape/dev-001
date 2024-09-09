@@ -1,4 +1,6 @@
-﻿namespace TryOut.FactoryMethod.StraightCode {
+﻿using TryOut.FactoryMethod.Refactored;
+
+namespace TryOut.FactoryMethod.StraightCode {
     public class Client {
         public void Do() {
             var parser = new Parser();
@@ -8,57 +10,25 @@
         }
     }
 
-    internal class Parser {
+    internal class Parser
+    {
+        private static readonly NodeFactory NodeFactory = new();
         public bool StringNodeDecode { get; set; }
         public bool RemoveEscapeCharacters { get; set; }
 
-        public Node Parse(string url) {
-            var stringParser = new StringParser(this, url);
-            return stringParser.FindString();
-        }
-    }
-
-    internal class StringParser {
-        private readonly Parser parser;
-        private string url;
-
-        public StringParser(Parser parser, string url) {
-            this.url = url;
-            this.parser = parser;
-        }
-
-        public Node FindString() {
-            if (parser.RemoveEscapeCharacters) {
+        public Node Parse(string url)
+        {
+            if (RemoveEscapeCharacters)
+            {
                 url = url.Replace("\t", "");
             }
 
-            if (parser.StringNodeDecode) {
+            if (StringNodeDecode)
+            {
                 url = url.ToUpper();
             }
 
-            var stringNode = new Node();
-            stringNode.Create(url);
-            return stringNode;
+            return NodeFactory.Create(url);
         }
-    }
-
-    internal class Node {
-        public bool IsCompany;
-        public bool IsPerson;
-        public bool IsNonProfitFoundation;
-
-        public void Create(string url) {
-            if (url.StartsWith("c:")) {
-                IsCompany = true;
-            }
-            if (url.StartsWith("p:")) {
-                IsPerson = true;
-            }
-            if (url.StartsWith("n:")) {
-                IsNonProfitFoundation = true;
-            }
-        }
-
-
     }
 }
