@@ -1,25 +1,31 @@
 ﻿using System.Drawing;
+using TryOut._07AbstractFactory.StraightCode;
 
-namespace TryOut.AbstractFactory.StraightCode {
-    public class Game {
-        public Game() {
-            var player = new Player {
-                           Race = RaceType.Human
-                       };
+namespace TryOut.AbstractFactory.StraightCode
+{
+    public class Game
+    {
+        public Game()
+        {
+            var player = new Player
+            {
+                Race = RaceType.Human
+            };
 
+            UnitsAbstractFactory unitsAbstractFactory = new(player);
 
-            var infantry = player.CreateInfantry();
-            infantry.Point = new Point(1,1);
+            var infantry = unitsAbstractFactory.CreateInfantry();
+            infantry.SetLocation(1, 1);
 
-            var infantry1 = player.CreateInfantry();
-            infantry1.Point = new Point(2,3);
+            var rangers = unitsAbstractFactory.CreateRangers();
+            rangers.SetLocation(2, 3);
 
             infantry.Draw();
-            infantry1.Draw();
-
+            rangers.Draw();
         }
 
-        public void Turn(Player player) {
+        public void Turn(Player player)
+        {
 
         }
     }
