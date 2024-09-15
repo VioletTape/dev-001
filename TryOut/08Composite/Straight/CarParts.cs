@@ -1,4 +1,8 @@
 ﻿namespace TryOut.Composite.Straight {
+
+    /*
+     * Наивная реализация "в лоб", но которая позволяет контролировать типы и зависимости типов
+     */
     public class Car {
         public Body Body { get; set; }
         public List<Wheel> Wheels { get; set; }

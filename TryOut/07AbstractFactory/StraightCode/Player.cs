@@ -12,6 +12,7 @@ namespace TryOut.AbstractFactory.StraightCode {
                     return new ProtosInfantry(this);
                 case RaceType.Zerg:
                     return new ZergInfantry(this);
+                // и так для всех возможных комбинаций
             }
 
             throw new Exception();
@@ -42,6 +43,7 @@ namespace TryOut.AbstractFactory.StraightCode {
         void Draw();
     }
 
+    // дано для примера и что таких элементов может быть много 
     public interface IRangers {
         int Armor { get; set; }
         int HP { get; set; }

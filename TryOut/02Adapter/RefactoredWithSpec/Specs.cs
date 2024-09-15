@@ -1,6 +1,9 @@
 ﻿using System.Collections.ObjectModel;
 
 namespace TryOut._02Adapter.RefactoredWithSpec {
+    /*
+     * весьма редкий случай в реальной жизни, но шаблон полезный для доменной логики
+     */
     public class NullSpecification<T> : Specification<T> {
         public override bool IsSatisfiedBy(T obj) {
             return true;

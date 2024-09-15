@@ -5,6 +5,8 @@
             var orders = new OrderRepo().Get(new TopSpecification<Order>(10) & new OrderForCustomer(customers[0]));
         }
     }
+    // пример использования фасада для спецификации. 
+    // фасад должен знать как и что потом делать
 
     // public class DataFacade {
     //     private Dictionary<T, IAdapter<T>> adapters = new Dictionary<T, IAdapter<T>> {

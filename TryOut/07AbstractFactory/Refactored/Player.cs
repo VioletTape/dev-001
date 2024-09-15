@@ -64,6 +64,7 @@ namespace TryOut.AbstractFactory.Refactored {
     }
 
     public class InfantryFactory : IBaseFactory {
+        // фабрика создает объекты на остове прототипов 
          static Dictionary<RaceType, IInfantry> prototypes
             = new Dictionary<RaceType, IInfantry> {
                 {
@@ -90,7 +91,9 @@ namespace TryOut.AbstractFactory.Refactored {
             };
 
         public object Create(Player player) {
+            // клонируем прототип
             var infantry = prototypes[player.Race.RaceType].Clone(); 
+
             infantry.Player = player;
             return infantry;
         }
@@ -117,9 +120,11 @@ namespace TryOut.AbstractFactory.Refactored {
 
     // Abstract Factory
     public class Factory {
+        // для абстрактной фабрики надо оценить по какому параметру/измерению чаще будем создавать объекты
+        // можно было бы сделать по расе юнитов
        static Dictionary<Type, IBaseFactory> factories = new Dictionary<Type, IBaseFactory> {
-
             {typeof(IInfantry), new InfantryFactory()}, 
+            // и далее по типам
         };
 
        static Dictionary<UnitType, IBaseFactory> factoriesByTypes = new Dictionary<UnitType, IBaseFactory> {
@@ -127,6 +132,8 @@ namespace TryOut.AbstractFactory.Refactored {
            {UnitType.Infantry, new InfantryFactory()}, 
        };
 
+       // на практике стоит задуматься о том, какой API дать разработчикам
+       // чтобы удобнее было работать
        public T Create<T>(Player player)  where T : IUnit {
            var unit = (T)factories[typeof(T)].Create(player);
            return unit;

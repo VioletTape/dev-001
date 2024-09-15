@@ -1,4 +1,8 @@
 ﻿namespace TryOut.Adapter.StraightCode {
+
+    /*
+     * Репозиторий для доступа к данным из базы, чтобы отдать домену
+     */
     public class CustomerRepo {
         private readonly DbAccessor dbAccessor;
         private readonly Table<CustomerDto> table;

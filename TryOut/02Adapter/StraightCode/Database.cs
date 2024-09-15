@@ -2,6 +2,9 @@
 using System.Linq.Expressions;
 
 namespace TryOut.Adapter.StraightCode {
+    /*
+     * технические классы
+     */
     public class DbAccessor {
         public Table<T> GetTable<T>() where T : IDto {
             return new Table<T>();

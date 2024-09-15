@@ -13,7 +13,8 @@
         public List<Customer> GetCustomers(int top) {
             var result = dbAccessor.Select(table.Take(top));
 
-           return result.Select(r => customerAdapter.Adapt(r)).ToList();
+            // используем адаптер
+            return result.Select(r => customerAdapter.Adapt(r)).ToList();
 
             
         }
@@ -22,6 +23,7 @@
             var query = table.Take(top).Where(c => c.Name.StartsWith(nameStartsFrom));
             var result = dbAccessor.Select(query);
 
+            // используем адаптер
             return result.Select(r => customerAdapter.Adapt(r)).ToList();
         }
     }

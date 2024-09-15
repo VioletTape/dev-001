@@ -1,4 +1,6 @@
-﻿namespace TryOut.Composite.Refactored {
+﻿namespace TryOut._09Builder.Refactored.Classical;
+
+public class CarParts {
     public interface ICarPart {
         decimal Price { get; set; }
         decimal GetFullPrice();
@@ -17,8 +19,6 @@
             }
         }
 
-        // в реальности нужно будет контроллировать,
-        // что к чему можно добавлять. Не используется для упрощения кода. 
         public virtual bool CanAddPart() {
             return true;
         }
@@ -38,8 +38,8 @@
         }
     }
 
-    public  class Car : CompositeNode { }
-    
+    public class Car : CompositeNode {}
+
     public class Body : CompositeNode {}
 
     public class Salon : CompositeNode {}
@@ -63,7 +63,4 @@
     public class Disc : Node {}
 
     public class Turbo : Node {}
-
-
-    
 }

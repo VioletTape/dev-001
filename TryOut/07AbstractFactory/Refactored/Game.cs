@@ -12,10 +12,12 @@ namespace TryOut.AbstractFactory.Refactored {
 
             var factory = new Factory();
 
-
+            // тут фабрика гибче, чем каноническая. Мы можем сразу подать два параметра для
+            // понимания какое семейство использовать и что именно создавать. 
             var infantry1 = factory.Create<IInfantry>(player);
             infantry1.Point = new Point(1,1);
 
+            // второй вариант 
             var infantry2 = (IInfantry)factory.Create(player2, UnitType.Infantry);
 
             infantry1.Draw();
